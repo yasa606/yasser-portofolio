@@ -5,7 +5,6 @@ import Projects from "./pages/PROJECTS/project";
 import Skills from "./pages/skills/skill";
 import Contact from "./pages/contact me/contact_me";
 import KnowledgeBase from "./pages/knowladge base/knowladge_base";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 function App() {
   return (
