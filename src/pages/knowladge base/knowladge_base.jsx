@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
+
 const kbData = [
   {
     id: 1,
@@ -251,7 +253,7 @@ const kbData = [
     question:
       "What is the difference between std::unique_ptr and std::shared_ptr in modern C++?",
     answer:
-      "To reduce load times in React apps, you must minimize the initial JavaScript bundle size and optimize asset delivery. Because client-side React apps require the browser to download, parse, and execute the JavaScript before rendering the page, reducing the amount of code shipped upfront is the most effective approach.",
+      "In modern C++, the main difference is ownership. std::unique_ptr enforces exclusive ownership (no copies allowed), while std::shared_ptr allows for shared ownership using reference counting.",
     image:
       "https://i.pinimg.com/1200x/3f/b3/4f/3fb34f709b563ca4036796d98c869380.jpg",
   },
@@ -297,25 +299,23 @@ const kbData = [
   },
 ];
 
-cconst KnowledgeBase = () => {
+const KnowledgeBase = () => {
   const [openId, setOpenId] = useState(null);
 
   useEffect(() => {
-    // 1. Create the Schema object
     const faqSchema = {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      "mainEntity": kbData.map((item) => ({
+      mainEntity: kbData.map((item) => ({
         "@type": "Question",
-        "name": item.question,
-        "acceptedAnswer": {
+        name: item.question,
+        acceptedAnswer: {
           "@type": "Answer",
-          "text": item.answer,
+          text: item.answer,
         },
       })),
     };
 
-    // 2. Inject into Head
     let script = document.getElementById("faq-schema");
     if (!script) {
       script = document.createElement("script");
@@ -325,7 +325,6 @@ cconst KnowledgeBase = () => {
     }
     script.textContent = JSON.stringify(faqSchema);
 
-    // Cleanup on unmount
     return () => {
       const s = document.getElementById("faq-schema");
       if (s) s.remove();
@@ -333,46 +332,70 @@ cconst KnowledgeBase = () => {
   }, []);
 
   return (
-    <section id="knowledge-base" className="bg-[#0a0a0a] min-h-screen py-20 px-6 text-white">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-4xl font-bold mb-12 text-center">
-          Technical <span className="text-cyan-400">Knowledge Base</span>
-        </h2>
-        
-        {/* Schema markup tells Google how to display these FAQs in search results */}
-        
+    <>
+      {/* 2. Add Helmet for dynamic SEO metadata */}
+      <Helmet>
+        <title>Technical Knowledge Base | Yasser Osama</title>
+        <meta
+          name="description"
+          content="Explore Yasser Osama's technical knowledge base featuring expert insights on React, Next.js, Backend architecture, and Blockchain development."
+        />
+        <link
+          rel="canonical"
+          href="https://yasser-portofolio-orpin.vercel.app/knowledge-base"
+        />
+      </Helmet>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-          {kbData.map((item) => (
-            <div
-              key={item.id}
-              className="bg-[#111111] border border-white/10 rounded-2xl overflow-hidden flex flex-col"
-            >
-              <div className="w-full h-48 bg-gray-900">
-                <img src={item.image} alt={item.question} className="w-full h-full object-cover opacity-80" />
-              </div>
-              <div className="p-6 flex-grow">
-                <span className="text-cyan-400 text-xs font-bold uppercase tracking-widest">{item.category}</span>
-                <h3 className="text-lg font-semibold mt-2">{item.question}</h3>
-              </div>
-              <button
-                onClick={() => setOpenId(openId === item.id ? null : item.id)}
-                className="w-full py-3 text-cyan-400 text-sm font-semibold border-t border-white/10 hover:bg-white/5 transition-colors"
-              >
-                {openId === item.id ? "Collapse Answer" : "Read Answer"}
-              </button>
+      <section
+        id="knowledge-base"
+        className="bg-[#0a0a0a] min-h-screen py-20 px-6 text-white"
+      >
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl font-bold mb-12 text-center">
+            Technical <span className="text-cyan-400">Knowledge Base</span>
+          </h2>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+            {kbData.map((item) => (
               <div
-                className={`overflow-hidden transition-all duration-300 ${openId === item.id ? "max-h-40 border-t border-white/10" : "max-h-0"}`}
+                key={item.id}
+                className="bg-[#111111] border border-white/10 rounded-2xl overflow-hidden flex flex-col"
               >
-                <div className="p-6 text-gray-400 text-sm leading-relaxed">
-                  <p>{item.answer}</p>
+                <div className="w-full h-48 bg-gray-900">
+                  <img
+                    src={item.image}
+                    alt={item.question}
+                    className="w-full h-full object-cover opacity-80"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="p-6 grow">
+                  <span className="text-cyan-400 text-xs font-bold uppercase tracking-widest">
+                    {item.category}
+                  </span>
+                  <h3 className="text-lg font-semibold mt-2">
+                    {item.question}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setOpenId(openId === item.id ? null : item.id)}
+                  className="w-full py-3 text-cyan-400 text-sm font-semibold border-t border-white/10 hover:bg-white/5 transition-colors"
+                >
+                  {openId === item.id ? "Collapse Answer" : "Read Answer"}
+                </button>
+                <div
+                  className={`overflow-hidden transition-all duration-300 ${openId === item.id ? "max-h-40 border-t border-white/10" : "max-h-0"}`}
+                >
+                  <div className="p-6 text-gray-400 text-sm leading-relaxed">
+                    <p>{item.answer}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 
