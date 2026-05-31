@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
 const kbData = [
   {
     id: 1,
@@ -298,15 +297,50 @@ const kbData = [
   },
 ];
 
-const KnowledgeBase = () => {
+cconst KnowledgeBase = () => {
   const [openId, setOpenId] = useState(null);
 
+  useEffect(() => {
+    // 1. Create the Schema object
+    const faqSchema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": kbData.map((item) => ({
+        "@type": "Question",
+        "name": item.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": item.answer,
+        },
+      })),
+    };
+
+    // 2. Inject into Head
+    let script = document.getElementById("faq-schema");
+    if (!script) {
+      script = document.createElement("script");
+      script.id = "faq-schema";
+      script.type = "application/ld+json";
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(faqSchema);
+
+    // Cleanup on unmount
+    return () => {
+      const s = document.getElementById("faq-schema");
+      if (s) s.remove();
+    };
+  }, []);
+
   return (
-    <section className="bg-[#0a0a0a] min-h-screen py-20 px-6 text-white">
+    <section id="knowledge-base" className="bg-[#0a0a0a] min-h-screen py-20 px-6 text-white">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-4xl font-bold mb-12 text-center">
           Technical <span className="text-cyan-400">Knowledge Base</span>
         </h2>
+        
+        {/* Schema markup tells Google how to display these FAQs in search results */}
+        
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
           {kbData.map((item) => (
@@ -314,33 +348,19 @@ const KnowledgeBase = () => {
               key={item.id}
               className="bg-[#111111] border border-white/10 rounded-2xl overflow-hidden flex flex-col"
             >
-              {/* Header Image */}
               <div className="w-full h-48 bg-gray-900">
-                <img
-                  src={item.image}
-                  alt={item.question}
-                  className="w-full h-full object-cover opacity-80"
-                />
+                <img src={item.image} alt={item.question} className="w-full h-full object-cover opacity-80" />
               </div>
-
-              {/* Title Area */}
               <div className="p-6 flex-grow">
-                <span className="text-cyan-400 text-xs font-bold uppercase tracking-widest">
-                  {item.category}
-                </span>
+                <span className="text-cyan-400 text-xs font-bold uppercase tracking-widest">{item.category}</span>
                 <h3 className="text-lg font-semibold mt-2">{item.question}</h3>
               </div>
-
-              {/* Toggle Button */}
               <button
                 onClick={() => setOpenId(openId === item.id ? null : item.id)}
                 className="w-full py-3 text-cyan-400 text-sm font-semibold border-t border-white/10 hover:bg-white/5 transition-colors"
               >
                 {openId === item.id ? "Collapse Answer" : "Read Answer"}
               </button>
-
-              {/* Expandable Answer Area */}
-              {/* Added 'min-h-[120px]' to reserve space so the card doesn't jump */}
               <div
                 className={`overflow-hidden transition-all duration-300 ${openId === item.id ? "max-h-40 border-t border-white/10" : "max-h-0"}`}
               >
