@@ -27,9 +27,9 @@ function App() {
         <Route path="/knowledge-base" element={<KnowledgeBase />} />
       </Routes>
       <footer className="border-t border-white/10 bg-[#050505]">
-        <div className="max-w-7xl mx-auto px-6 py-6 text-center text-gray-500 text-sm">
-          © {new Date().getFullYear()} Yasser Osama. All Rights Reserved.
-        </div>
+         <div className="max-w-7xl mx-auto px-6 py-6 text-center text-gray-400 text-sm">
+           © {new Date().getFullYear()} Yasser Osama. All Rights Reserved.
+         </div>
       </footer>
     </BrowserRouter>
   );
