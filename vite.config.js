@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     sitemap({
-      hostname: "https://yasser-portofolio-orpin.vercel.app/",
+      hostname: "https://yasserportofolio.netlify.app/",
       routes: ["/", "/knowledge-base"],
     }),
   ],
