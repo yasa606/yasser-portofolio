@@ -302,48 +302,35 @@ const kbData = [
 const KnowledgeBase = () => {
   const [openId, setOpenId] = useState(null);
 
-  useEffect(() => {
-    const faqSchema = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: kbData.map((item) => ({
-        "@type": "Question",
-        name: item.question,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: item.answer,
-        },
-      })),
-    };
-
-    let script = document.getElementById("faq-schema");
-    if (!script) {
-      script = document.createElement("script");
-      script.id = "faq-schema";
-      script.type = "application/ld+json";
-      document.head.appendChild(script);
-    }
-    script.textContent = JSON.stringify(faqSchema);
-
-    return () => {
-      const s = document.getElementById("faq-schema");
-      if (s) s.remove();
-    };
-  }, []);
+  // Define Schema outside to keep it clean
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": kbData.map((item) => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer,
+      },
+    })),
+  };
 
   return (
     <>
-      {/* 2. Add Helmet for dynamic SEO metadata */}
       <Helmet>
         <title>Technical Knowledge Base | Yasser Osama</title>
         <meta
           name="description"
           content="Explore Yasser Osama's technical knowledge base featuring expert insights on React, Next.js, Backend architecture, and Blockchain development."
         />
-        <link
-          rel="canonical"
-          href="https://yasserportofolio.netlify.app/knowledge-base"
-        />
+        {/* Corrected path - no double slash */}
+        <link rel="canonical" href="https://yasserportofolio.netlify.app/knowledge-base" />
+        
+        {/* Inject schema via Helmet instead of manual DOM manipulation */}
+        <script type="application/ld+json">
+          {JSON.stringify(faqSchema)}
+        </script>
       </Helmet>
 
       <section
@@ -357,14 +344,14 @@ const KnowledgeBase = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
             {kbData.map((item) => (
-              <div
+              <article // Changed div to article for semantic SEO
                 key={item.id}
                 className="bg-[#111111] border border-white/10 rounded-2xl overflow-hidden flex flex-col"
               >
                 <div className="w-full h-48 bg-gray-900">
                   <img
                     src={item.image}
-                    alt={item.question}
+                    alt="" // Decorative image, keep alt empty or describe content
                     className="w-full h-full object-cover opacity-80"
                     loading="lazy"
                   />
@@ -377,20 +364,26 @@ const KnowledgeBase = () => {
                     {item.question}
                   </h3>
                 </div>
+                
+                {/* Semantic button with aria controls */}
                 <button
                   onClick={() => setOpenId(openId === item.id ? null : item.id)}
+                  aria-expanded={openId === item.id}
+                  aria-controls={`answer-${item.id}`}
                   className="w-full py-3 text-cyan-400 text-sm font-semibold border-t border-white/10 hover:bg-white/5 transition-colors"
                 >
                   {openId === item.id ? "Collapse Answer" : "Read Answer"}
                 </button>
+                
                 <div
+                  id={`answer-${item.id}`}
                   className={`overflow-hidden transition-all duration-300 ${openId === item.id ? "max-h-40 border-t border-white/10" : "max-h-0"}`}
                 >
                   <div className="p-6 text-gray-400 text-sm leading-relaxed">
                     <p>{item.answer}</p>
                   </div>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
@@ -398,5 +391,7 @@ const KnowledgeBase = () => {
     </>
   );
 };
+
+export default KnowledgeBase;
 
 export default KnowledgeBase;
