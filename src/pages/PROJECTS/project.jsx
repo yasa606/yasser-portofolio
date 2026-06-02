@@ -1,7 +1,7 @@
 import React from "react";
-import dubai from "./page3.png";
-import splitrust from "./page2.png";
-import movie from "./page.png";
+import dubai from "./page3.webp";
+import splitrust from "./page2.webp";
+import movie from "./page.webp";
 
 const Projects = () => {
   const projects = [
