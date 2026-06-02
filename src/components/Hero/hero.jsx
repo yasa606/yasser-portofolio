@@ -1,5 +1,5 @@
 import React from "react";
-import profile from "../../assets/profile.png";
+import profile from "../../assets/yasser-profile-photo.png";
 
 const Hero = () => {
   // Helper to handle scrolling
