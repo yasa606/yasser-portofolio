@@ -342,7 +342,7 @@ const KnowledgeBase = () => {
         />
         <link
           rel="canonical"
-          href="https://yasserportofolio.netlify.app//knowledge-base"
+          href="https://yasserportofolio.netlify.app/knowledge-base"
         />
       </Helmet>
 
